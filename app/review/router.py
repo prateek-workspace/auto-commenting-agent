@@ -3,6 +3,8 @@ from sqlalchemy.orm import Session
 from app.review.service import start_review as start_review_service
 from app.core.database import SessionLocal
 from app.review.schemas import ReviewAction, ReviewResponse
+from app.core.database import get_db
+from app.review.models import Review
 from app.review.service import approve_comment, request_edit
 
 router = APIRouter(tags=["review"])
@@ -68,3 +70,14 @@ def request_review(
 @router.post("/review/start/{comment_id}")
 def start_review(comment_id: int, db: Session = Depends(get_db)):
     return start_review_service(comment_id=comment_id, db=db)
+
+@router.get("/")
+def list_reviews(db: Session = Depends(get_db)):
+    """
+    List all review actions (approve / edit / reject).
+    """
+    return (
+        db.query(Review)
+        .order_by(Review.id.desc())
+        .all()
+    )

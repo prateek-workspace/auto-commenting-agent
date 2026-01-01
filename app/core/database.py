@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from app.core.config import settings
+from typing import Generator
 
 engine = create_engine(
     settings.DATABASE_URL,
@@ -25,3 +26,11 @@ def init_db():
     from app.feedback.models import Feedback
 
     Base.metadata.create_all(bind=engine)
+
+
+def get_db() -> Generator:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

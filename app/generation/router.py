@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-
+from app.generation.models import CommentSuggestion
 from app.core.database import SessionLocal
 from app.generation.service import generate_comments_for_post
 
@@ -35,3 +35,27 @@ def generate(
         }
         for s in suggestions
     ]
+
+
+@router.get("/")
+def list_comments(db: Session = Depends(get_db)):
+    """
+    List all comment suggestions across all states.
+    """
+    return (
+        db.query(CommentSuggestion)
+        .order_by(CommentSuggestion.id.desc())
+        .all()
+    )
+
+@router.get("/post/{post_id}")
+def list_comments_for_post(post_id: int, db: Session = Depends(get_db)):
+    """
+    List all comments generated for a given post.
+    """
+    return (
+        db.query(CommentSuggestion)
+        .filter(CommentSuggestion.post_id == post_id)
+        .order_by(CommentSuggestion.id.asc())
+        .all()
+    )

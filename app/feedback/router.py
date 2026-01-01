@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-
+from app.core.database import get_db
+from app.feedback.models import Feedback
 from app.core.database import SessionLocal
 from app.feedback.service import record_feedback
 
@@ -34,3 +35,7 @@ def record(
         engagement_notes=engagement_notes,
         db=db,
     )
+
+@router.get("/")
+def list_feedback(db: Session = Depends(get_db)):
+    return db.query(Feedback).order_by(Feedback.created_at.desc()).all()

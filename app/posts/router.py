@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.database import SessionLocal
 from app.posts.schemas import PostCreate, PostResponse
 from app.posts.service import create_post
-
+from app.posts.models import Post
 router = APIRouter(prefix="/posts", tags=["posts"])
 
 
@@ -26,3 +26,12 @@ def submit_post(payload: PostCreate, db: Session = Depends(get_db)):
     - Persists if relevant
     """
     return create_post(payload, db)
+
+
+@router.get("/")
+def list_posts(db: Session = Depends(get_db)):
+    """
+    List all posts in the system.
+    Useful for monitoring ingestion & targeting.
+    """
+    return db.query(Post).order_by(Post.id.desc()).all()
