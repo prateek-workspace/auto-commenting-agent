@@ -7,7 +7,8 @@ from app.core.enums import PostState
 from app.brand.detectors import is_brand_relevant
 from app.generation.service import generate_comments_for_post
 from app.core.exceptions import BrandViolation
-from app.brand.validator import validate_brand_compliance
+from app.brand.validators import validate_brand_compliance
+from app.workflows.post_pipeline import process_identified_post
 
 
 def create_post(payload: PostCreate, db: Session):
@@ -70,6 +71,7 @@ def ingest_post(*, payload: PostIngestRequest, db: Session):
 
     db.add(post)
     db.commit()
+    process_identified_post(post, db)
     db.refresh(post)
 
     metadata = {

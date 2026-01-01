@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class CommentState(str, Enum):
     IDENTIFIED = "identified"
     GENERATED = "generated"
@@ -10,7 +11,13 @@ class CommentState(str, Enum):
     POSTED = "posted"
     FAILED = "failed"
 
+
 class PostState(str, Enum):
     IDENTIFIED = "identified"
     UNDER_REVIEW = "under_review"
-    REJECTED = "rejected"
+
+
+class FeedbackType(str, Enum):
+    EDIT_DIFF = "edit_diff"
+    REJECTION_REASON = "rejection_reason"
+    APPROVAL_SIGNAL = "approval_signal"

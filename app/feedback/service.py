@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
-from app.feedback.models import Feedback
+from app.feedback.models import Feedback, FeedbackLog
+from app.core.enums import FeedbackType
 from app.generation.models import CommentSuggestion
-from app.core.enums import CommentState
 
 
 def record_feedback(
@@ -14,10 +14,6 @@ def record_feedback(
     engagement_notes: str | None = None,
     db: Session,
 ):
-    """
-    Store feedback signals for future learning.
-    """
-
     feedback = Feedback(
         comment_id=comment_id,
         approved=approved,
@@ -35,16 +31,6 @@ def get_recent_approved_comment_patterns(
     db: Session,
     limit: int = 50,
 ) -> list[str]:
-    """
-    Memory aggregation function.
-
-    Returns short summaries / patterns from previously APPROVED comments.
-    These are injected into prompts as NEGATIVE CONSTRAINTS
-    to avoid repetition.
-
-    This approach scales from 100 → 10,000 comments without embeddings.
-    """
-
     stmt = (
         select(CommentSuggestion.text)
         .join(Feedback, Feedback.comment_id == CommentSuggestion.id)
@@ -55,12 +41,75 @@ def get_recent_approved_comment_patterns(
 
     results = db.execute(stmt).scalars().all()
 
-    # Simple pattern extraction (V1):
-    # truncate and normalize phrasing
-    patterns = [
+    return [
         text.strip()[:120]
         for text in results
         if text
     ]
 
-    return patterns
+
+def store_approval_signal(
+    *, comment_id: int, option_index: int, reviewer: str | None, db: Session
+):
+    db.add(
+        FeedbackLog(
+            comment_id=comment_id,
+            feedback_type=FeedbackType.APPROVAL_SIGNAL,
+            approved_option_index=option_index,
+            reviewer=reviewer,
+        )
+    )
+    db.commit()
+
+
+def store_edit_feedback(
+    *,
+    comment_id: int,
+    original_text: str,
+    edited_text: str,
+    reviewer: str | None,
+    db: Session,
+):
+    db.add(
+        FeedbackLog(
+            comment_id=comment_id,
+            feedback_type=FeedbackType.EDIT_DIFF,
+            original_text=original_text,
+            updated_text=edited_text,
+            reviewer=reviewer,
+        )
+    )
+    db.commit()
+
+
+def get_recent_edit_examples(db: Session, limit: int = 5) -> str:
+    rows = (
+        db.query(FeedbackLog)
+        .filter(FeedbackLog.feedback_type == FeedbackType.EDIT_DIFF)
+        .order_by(FeedbackLog.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+
+    return "\n\n".join(
+        f"Before: {r.original_text}\nAfter: {r.updated_text}"
+        for r in rows
+    )
+
+
+def store_rejection_reason(
+    *,
+    comment_id: int,
+    reason: str,
+    reviewer: str | None,
+    db: Session,
+):
+    db.add(
+        FeedbackLog(
+            comment_id=comment_id,
+            feedback_type=FeedbackType.REJECTION_REASON,
+            rejection_reason=reason,
+            reviewer=reviewer,
+        )
+    )
+    db.commit()

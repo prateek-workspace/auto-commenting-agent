@@ -1,5 +1,5 @@
 from requests import Session
-from app.brand.validator import validate_brand_compliance
+from app.brand.validators import validate_brand_compliance
 from app.core.enums import PostState
 from app.core.exceptions import BrandViolation
 from app.generation.service import generate_comments_for_post

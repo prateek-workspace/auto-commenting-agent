@@ -1,5 +1,5 @@
 from app.brand.context import get_brand_context_text
-from app.brand.validator import validate_brand_compliance
+from app.brand.validators import validate_brand_compliance
 from app.brand.detectors import detect_risk_signals
 
 

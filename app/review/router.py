@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.review.service import start_review as start_review_service
+from app.review.service import approve_comment, request_edit, auto_edit_comment
 from app.core.database import SessionLocal
 from app.review.schemas import ReviewAction, ReviewResponse
 from app.core.database import get_db
@@ -67,9 +67,6 @@ def request_review(
     )
     return comment
 
-@router.post("/review/start/{comment_id}")
-def start_review(comment_id: int, db: Session = Depends(get_db)):
-    return start_review_service(comment_id=comment_id, db=db)
 
 @router.get("/")
 def list_reviews(db: Session = Depends(get_db)):
@@ -80,4 +77,18 @@ def list_reviews(db: Session = Depends(get_db)):
         db.query(Review)
         .order_by(Review.id.desc())
         .all()
+    )
+
+@router.post("/auto-edit/{comment_id}")
+def auto_edit(
+    comment_id: int,
+    feedback: str,
+    reviewer: str | None = None,
+    db: Session = Depends(get_db),
+):
+    return auto_edit_comment(
+        comment_id=comment_id,
+        feedback=feedback,
+        reviewer=reviewer,
+        db=db,
     )
