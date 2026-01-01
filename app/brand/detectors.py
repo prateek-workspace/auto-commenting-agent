@@ -20,3 +20,25 @@ def detect_risk_signals(text: str) -> list[str]:
         signals.append("Exclamatory emphasis")
 
     return signals
+
+
+def is_brand_relevant(text: str) -> bool:
+    """
+    Cheap, fast pre-filter.
+    No LLM here.
+    """
+
+    keywords = [
+        "engineering",
+        "developer",
+        "system",
+        "architecture",
+        "debug",
+        "scaling",
+        "design",
+        "startup",
+        "product",
+    ]
+
+    lowered = text.lower()
+    return any(k in lowered for k in keywords)

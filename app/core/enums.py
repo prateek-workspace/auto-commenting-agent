@@ -9,3 +9,8 @@ class CommentState(str, Enum):
     POSTING = "posting"
     POSTED = "posted"
     FAILED = "failed"
+
+class PostState(str, Enum):
+    IDENTIFIED = "identified"
+    UNDER_REVIEW = "under_review"
+    REJECTED = "rejected"

@@ -4,6 +4,7 @@ from app.core.config import settings
 from app.core.database import init_db
 from app.core.logging import setup_logging
 
+from app.posts.router import router as worker_posts_router
 from app.posts.router import router as posts_router
 from app.generation.router import router as generation_router
 from app.review.router import router as review_router
@@ -23,6 +24,8 @@ def create_app() -> FastAPI:
     app.include_router(review_router, prefix="/review")
     app.include_router(posting_router)
     app.include_router(feedback_router)
+    app.include_router(worker_posts_router)
+
 
     @app.on_event("startup")
     def on_startup():

@@ -22,3 +22,12 @@ class PostResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class PostIngestRequest(BaseModel):
+    platform: str
+    content: str
+
+    author_name: Optional[str] = None
+    author_role: Optional[str] = None
+    company: Optional[str] = None
+    post_url: Optional[str] = None

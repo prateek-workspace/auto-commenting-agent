@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.generation.models import CommentSuggestion
 from app.core.database import SessionLocal
 from app.generation.service import generate_comments_for_post
+from app.generation.worker import process_identified_posts
 
 router = APIRouter(prefix="/generation", tags=["generation"])
 
@@ -59,3 +60,10 @@ def list_comments_for_post(post_id: int, db: Session = Depends(get_db)):
         .order_by(CommentSuggestion.id.asc())
         .all()
     )
+
+@router.post("/worker/run")
+def run_generation_worker(
+    db: Session = Depends(get_db),
+):
+    process_identified_posts(db)
+    return {"status": "ok"}
