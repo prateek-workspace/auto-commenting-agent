@@ -1,0 +1,59 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment variables and secrets
+.env
+.flaskenv
+secrets.txt
+.venv
+
+# Databases
+*.sqlite
+*.db
+test_db.db
+
+# Editors and IDEs
+.idea/  # JetBrains IDEs (PyCharm, IntelliJ)
+.vscode/ # VS Code
+.cache/
+.mypy_cache/
+.pytest_cache/
+htmlcov/
+.coverage*
+log.txt
+*~ # vim temporary files
+
+# Operating System Files
+.DS_Store # macOS
+.directory # KDE directory preferences
+.Trash-* # Linux trash folder
+._* # macOS thumbnails
